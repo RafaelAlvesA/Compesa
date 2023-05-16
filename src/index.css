@@ -7,9 +7,8 @@
 
 .dndflow aside {
   border-right: 1px solid #eee;
-  padding: 15px 10px;
+  width: 100% !important;
   font-size: 12px;
-  background: #fcfcfc;
 }
 
 .dndflow aside .description {
@@ -30,6 +29,7 @@
 
 .dndflow .dndnode.input {
   border-color: #0041d0;
+  
 }
 
 .dndflow .dndnode.output {

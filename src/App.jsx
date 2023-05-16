@@ -1,11 +1,28 @@
-import React, { useState, useRef, useCallback } from 'react';
-import ReactFlow, { Panel, Background, Controls, useNodesState, useEdgesState, addEdge, ReactFlowProvider } from 'reactflow';
+import React, { useState, useEffect,useRef, useCallback } from 'react';
+import ReactFlow, { ReactFlowProvider, Panel, Background, Controls, useNodesState, useEdgesState, addEdge } from 'reactflow';
 import 'reactflow/dist/style.css';
+
 import './style.css';
 import Sidebar from './components/DnD/sidebar.jsx';
 import './index.css'
 
 //Nodes, Edges
+
+const connectionLineStyle = { stroke: '#204499' };
+
+const initialNodes = [
+  { id: 'A', position: { x: 10, y: 0 }, type: 'group', style: { width: 170, height: 140 }, },
+  { id: '1', position: { x: 10, y: 30 }, parentNode: 'A', extent: 'parent', data: { label: 'Reservatorio' } },
+  { id: '1A', position: { x: 10, y: 80 }, parentNode: 'A', extent: 'parent', data: { label: 'Dados do Reservatorio' } },
+  { id: '2', position: { x: 350, y: 30 },type:'Booster', data: { label: 'Elevatoria' } },
+  { id: '3', position: { x: 700, y: 30 }, data: { label: 'balblaa' } },
+
+];
+
+const initialEdges = [
+  { id: 'e1-2', source: '1', target: '2' },
+  { id: 'e2-3', source: '2', target: '3', animated: true },
+];
 
 let id = 0;
 const getId = () => `dndnode_${id++}`;
@@ -13,10 +30,9 @@ const getId = () => `dndnode_${id++}`;
 const DnDFlow = () => {
   const reactFlowWrapper = useRef(null);
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
-  const [edges, setEdges, onEdgesChange] = useEdgesState([]);
+  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
   const [reactFlowInstance, setReactFlowInstance] = useState(null);
 
-  const onConnect = useCallback((params) => setEdges((eds) => addEdge(params, eds)), []);
 
   const onDragOver = useCallback((event) => {
     event.preventDefault();
@@ -50,42 +66,28 @@ const DnDFlow = () => {
     },
     [reactFlowInstance]
   )
-}
 
-const initialNodes = [
-  { id: 'A', position: { x: 10, y: 0 }, type: 'group', style: { width: 170, height: 140 }, },
-  { id: '1', position: { x: 10, y: 30 }, parentNode: 'A', extent: 'parent', data: { label: 'Reservatorio' } },
-  { id: '1A', position: { x: 10, y: 80 }, parentNode: 'A', extent: 'parent', data: { label: 'Dados do Reservatorio' } },
-  { id: '2', position: { x: 350, y: 30 }, data: { label: 'Elevatoria' } },
-  { id: '3', position: { x: 700, y: 30 }, data: { label: 'balblaa' } },
 
-];
-
-const initialEdges = [
-  { id: 'e1-2', source: '1', target: '2' },
-  { id: 'e2-3', source: '2', target: '3', animated: true },
-];
-
-//function
-function App() {
-  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
-  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
-
-  const onConnect = useCallback((params) => setEdges((eds) => addEdge(params, eds)), [setEdges]);
-
+  const onConnect = useCallback((params) => setEdges((eds) => addEdge(params, eds)), []);
   return (
-    <div className="dndflow">
+
+    <div className="dndflow" >
       <ReactFlowProvider>
-        <div style={{ width: '100vw', height: '100vh' }}>
+        <div className="reactflow-wrapper" ref={reactFlowWrapper} style={{ width: '100vw', height: '100vh' }}>
           <ReactFlow
-            fitView
-            defaultNodes={nodes}
-            defaultEdges={edges}
+            nodes={nodes}
+            edges={edges}
             onNodesChange={onNodesChange}
             onEdgesChange={onEdgesChange}
-            onConnect={onConnect}>
-            <Panel id="componentes" position="top-left">
-            </Panel>
+            onConnect={onConnect}
+            connectionLineStyle={connectionLineStyle}
+            onInit={setReactFlowInstance}
+            onDrop={onDrop}
+            onDragOver={onDragOver}
+            fitView
+          >
+
+
             <Panel id="nav_related" position="bottom-center">
               <div id="related">
                 <div id="box" class="active">
@@ -111,9 +113,10 @@ function App() {
             <Controls />
           </ReactFlow>
         </div>
-        </ReactFlowProvider>
+          <Sidebar />
+      </ReactFlowProvider>
     </div>
-        );
+  );
 }
 
-        export default App
+export default DnDFlow

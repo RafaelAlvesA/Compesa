@@ -31,7 +31,7 @@ p{
 }
 
 .reservatorio{
-  background-image: url('./components/nodes/icons/reservatorio.png') !important;
+  background-image: url('./components/nodes/icons/reservatorio.png') !;
   background-size: cover;
 }
 
